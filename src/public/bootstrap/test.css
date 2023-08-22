@@ -1,0 +1,47 @@
+/* styles.css */
+
+/* Общие стили для всего документа */
+body {
+    font-family: Arial, sans-serif;
+    background-color: red;
+}
+
+/* Стили для кнопок */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Стили для списка */
+.list-group {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+}
+
+.list-group-item {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+}
+
+.delete-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
+}
+
+.modal-text {
+    color: black;
+}

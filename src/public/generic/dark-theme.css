@@ -1,0 +1,45 @@
+/* dark-theme.css */
+
+/* Применение темного фона к всему документу */
+body.dark-mode {
+    background-color: #333;
+    color: white; /* Цвет текста */
+}
+
+/* Изменение цвета ссылок */
+body.dark-mode a {
+    color: #00a0e9; /* Цвет ссылок */
+}
+
+/* Стили для кнопок в темном режиме */
+body.dark-mode .btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+body.dark-mode .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Стили для списка в темном режиме */
+body.dark-mode .list-group {
+    background-color: #292b2c;
+    border: 1px solid #555;
+}
+
+body.dark-mode .list-group-item {
+    background-color: #212529;
+    border-bottom: 1px solid #555;
+    color: white; /* Цвет текста элемента списка */
+}
+
+/* Стили для кнопок "Удалить" в темном режиме */
+body.dark-mode .delete-button {
+    color: white;
+}
+
+/* Стили текста на белом фоне в темном режиме */
+body.dark-mode .dark-text {
+    color: black;
+}
