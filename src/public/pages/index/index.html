@@ -9,45 +9,113 @@
     <link rel="stylesheet" href="/public/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="/public/generic/dark-theme.css"> <!-- Подключение стилей для темного режима -->
 
-    <script src="/public/pages/index/index.js"></script>
 	<script src="/public/bootstrap/jquery.min.js"></script>
     <script src="/public/bootstrap/popper.min.js"></script>
     <script src="/public/bootstrap/bootstrap.min.js"></script>
 </head>
 <body class="dark-mode"> <!-- Добавление класса для темного режима -->
-    <button type="button" class="btn btn-primary">Нажми меня</button>
     <div class="container mt-5">
         <h2 class="text-white">Список задач</h2> <!-- Изменение цвета текста -->
         <button type="button" class="btn btn-primary mb-2">Добавить</button>
+        <button type="button" class="btn btn-primary mb-2">Дай мне задачу</button>
+
         <div style="max-height: 300px; overflow: auto;"> <!-- Обернутый в div список с фиксированной высотой и скроллом -->
             <ul class="list-group">
                 {{ range $index, $element := . }}
-                <li class="list-group-item bg-dark text-white"> {{ $element }} <!-- Изменение цвета фона и текста -->
-                    <a class="btn btn-danger btn-sm float-right delete-button" data-toggle="modal" data-target="#confirmDelete{{ $index }}">Удалить</a>
-                    
-                    <!-- Модальное окно подтверждения удаления -->
-                    <div class="modal fade" id="confirmDelete{{ $index }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title dark-text" id="modalLabel">Подтвердите удаление</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body dark-text">
-                                    Вы уверены, что хотите удалить этот элемент?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                                    <a class="btn btn-danger" href="/remove-task/{{ $index }}">Удалить</a>
-                                </div>
-                            </div>
-                        </div>
-                </li>
+                    {{ if not $element.Parent }}
+                        <li class="list-group-item bg-dark text-white">
+                            {{ template "taskItem" $element }}
+                        </li>
+                    {{ end }}
                 {{ end }}
             </ul>
         </div>
-      </div>
+    </div>
+    <script src="/public/pages/index/index.js"></script>
 </body>
 </html>
+
+<!-- Рекурсивный шаблон для отображения задачи и её дочерних задач -->
+{{ define "taskItem" }}
+    <div class="d-flex justify-content-between">
+        <div>
+            {{ .Title }}
+        </div>
+        <div>
+            <a class="btn btn-primary btn-sm mr-2 float-right " data-toggle="modal" data-target="#editTask{{ .ID }}">Подробнее</a>
+            <a class="btn btn-danger btn-sm float-right delete-button" data-toggle="modal" data-target="#confirmDelete{{ .ID }}">Удалить</a>
+            {{ if .Children }}
+                <button class="btn btn-secondary btn-sm float-right ml-2 toggle-subtasks" data-task-id="{{ .ID }}">Подзадачи</button>
+            {{ end }}
+        </div>
+    </div>
+    
+      <!-- Модальное окно подтверждения удаления -->
+      <div class="modal fade" id="confirmDelete{{ .ID }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title dark-text" id="modalLabel">Подтвердите удаление</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body dark-text">
+                    Вы уверены, что хотите удалить этот элемент?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <a class="btn btn-danger" href="/remove-task/{{ .ID }}">Удалить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подробнее -->
+    <div class="modal fade" id="editTask{{ .ID }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title dark-text" id="modalLabel">Редактирование задачи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body dark-text">
+                    <form action="/update-task/{{ .ID }}" method="post">
+                        <label for="title">Название:</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ .Title }}">
+                        
+                        <label for="description">Описание:</label>
+                        <textarea class="form-control" id="description" name="description">{{ .Description }}</textarea>
+                        
+                        <label for="priority">Приоритет:</label>
+                        <input type="number" class="form-control" id="priority" name="priority" value="{{ .Priority }}">
+                        
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="background" name="background" {{ if .Background }}checked{{ end }}>
+                            <label class="form-check-label mb-2" for="background">В фоне</label>
+                        </div>
+                        
+                        <label for="notification_time">Время уведомления:</label>
+                        <input type="text" class="form-control" id="notification_time" name="notification_time" value="{{ .NotificationTime }}">
+                        
+                        <button type="submit" class="btn btn-primary">Сохранить</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ if .Children }}
+    <div class="mt-2 subtasks" id="subtasks-{{ .ID }}" style="display: none;">
+        <label for="subtasks">Подзадачи:</label>
+        <ul class="list-group subtask-list">
+            {{ range $index, $child := .Children }}
+                <li class="list-group-item bg-dark text-white subtask-item">
+                    {{ template "taskItem" $child }}
+                </li>
+            {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+{{ end }}

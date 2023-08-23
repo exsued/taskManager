@@ -5,13 +5,40 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	//"taskmanager/routes"
 )
 
+type Task struct {
+	ID               int
+	Title            string
+	Description      string
+	Priority         int
+	Background       bool
+	NotificationTime string
+	Parent           *Task
+	Children         []*Task // Список дочерних задач
+}
+
 var (
-	Tasks = []string{"gimba", "banga", "bonga", "gimba", "banga", "bonga", "gimba", "banga", "bonga", "gimba", "banga", "bonga", "gimba", "banga", "bonga"}
+	Tasks = []Task{
+		{
+			ID:               0,
+			Title:            "Задача 1",
+			Description:      "Описание задачи 1",
+			Priority:         3,
+			Background:       false,
+			NotificationTime: "10:00",
+		},
+		{
+			ID:               1,
+			Title:            "Подзадача 1.2",
+			Description:      "Описание подзадачи 1.2",
+			Priority:         3,
+			Background:       false,
+			NotificationTime: "10:00",
+		},
+	}
 )
 
 func neuter(next http.Handler) http.Handler {
@@ -24,23 +51,15 @@ func neuter(next http.Handler) http.Handler {
 	})
 }
 
-func DeleteTask(w http.ResponseWriter, r *http.Request) {
-	argStr := r.URL.Path[len("/remove-task/"):]
-	arg, err := strconv.Atoi(argStr)
-	if err != nil {
-		http.Error(w, "Такого индекса нет", http.StatusBadRequest)
-		return
-	}
-	fmt.Println("Фишки работают!")
-	Tasks = append(Tasks[:arg], Tasks[arg+1:]...)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
 func main() {
+	Tasks[0].Children = append(Tasks[0].Children, &Tasks[1])
+	Tasks[1].Parent = &Tasks[0]
+
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/public/", http.StripPrefix("/public/", neuter(fs)))
 	http.HandleFunc("/", Index)
 	http.HandleFunc("/remove-task/", DeleteTask)
+	http.HandleFunc("/update-task/", UpdateTask)
 	log.Fatalln(http.ListenAndServe(":8080", nil))
 	fmt.Println(os.Getwd())
 }

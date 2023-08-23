@@ -7,7 +7,7 @@ cd ./src
 
 if go build -o ${projectName}; then
     workDir=`pwd`
-    mate-terminal --working-directory="${workDir}" --command "bash -c '(./${projectName} ${args})'"
+    mate-terminal --working-directory="${workDir}" --command "bash -ic '(./${projectName} ${args})' && read"
     cd ..
     mv ./src/${projectName} ./bin/${projectName}
 fi
