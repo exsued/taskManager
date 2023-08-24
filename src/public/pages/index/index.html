@@ -44,6 +44,7 @@
         <div>
             <a class="btn btn-primary btn-sm mr-2 float-right " data-toggle="modal" data-target="#editTask{{ .ID }}">Подробнее</a>
             <a class="btn btn-danger btn-sm float-right delete-button" data-toggle="modal" data-target="#confirmDelete{{ .ID }}">Удалить</a>
+            <a class="btn btn-success btn-sm float-right delete-button" data-toggle="modal" href="/complete-task/{{ .ID }}">Выполнить</a>
             {{ if .Children }}
                 <button class="btn btn-secondary btn-sm float-right ml-2 toggle-subtasks" data-task-id="{{ .ID }}">Подзадачи</button>
             {{ end }}

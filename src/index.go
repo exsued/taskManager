@@ -11,5 +11,6 @@ var (
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
+	indextmpl, _ = template.ParseFiles(tmplPath + "index/index.html")
 	indextmpl.ExecuteTemplate(w, "index.html", Tasks)
 }

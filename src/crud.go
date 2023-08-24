@@ -6,6 +6,11 @@ import (
 	"strconv"
 )
 
+//АХТУНГ: ФУНКЦИЯ УДАЛЕНИЯ ЗАДАЧ ТОЛЬКО ДЛЯ АДМИНА
+/*
+TODO:
+Добавить проверку, за админа ли удаляем
+*/
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	argStr := r.URL.Path[len("/remove-task/"):]
 	index, err := strconv.Atoi(argStr)
@@ -13,9 +18,13 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Такого индекса нет", http.StatusBadRequest)
 		return
 	}
-
 	parent := Tasks[index].Parent
+	if len(Tasks[index].Children) > 0 {
+		http.Error(w, "Задачу с имеющимися подзадачами удалить нельзя", http.StatusBadRequest)
+		return
+	}
 	if parent != nil {
+		// Найден ребенок у родителя, удаляем его из списка детей
 		for _, child := range parent.Children {
 			if child.ID == index {
 				// Найден ребенок у родителя, удаляем его из списка детей
@@ -28,11 +37,11 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
 	// У детей перемещаем к родителю повыше
-	for _, child := range Tasks[index].Children {
+	/*for _, child := range Tasks[index].Children {
 		child.Parent = parent
 	}
+	*/
 
 	Tasks = append(Tasks[:index], Tasks[index+1:]...)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -53,6 +62,15 @@ func removeElement(slice []*Task, element *Task) ([]*Task, error) {
 
 	newSlice := append(slice[:indexToRemove], slice[indexToRemove+1:]...)
 	return newSlice, nil
+}
+
+func CompleteTask(w http.ResponseWriter, r *http.Request) {
+	argStr := r.URL.Path[len("/remove-task/"):]
+	index, err := strconv.Atoi(argStr)
+	if err != nil || index < 0 || index >= len(Tasks) {
+		http.Error(w, "Такого индекса нет", http.StatusBadRequest)
+		return
+	}
 }
 
 func UpdateTask(w http.ResponseWriter, r *http.Request) {

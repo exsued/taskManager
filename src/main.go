@@ -60,6 +60,7 @@ func main() {
 	http.HandleFunc("/", Index)
 	http.HandleFunc("/remove-task/", DeleteTask)
 	http.HandleFunc("/update-task/", UpdateTask)
+	http.HandleFunc("/complete-task/", CompleteTask)
 	log.Fatalln(http.ListenAndServe(":8080", nil))
 	fmt.Println(os.Getwd())
 }
